@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emerald Tour | 2026 Season 2</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root { --emerald: #1b5e20; --gold: #fbc02d; --dark: #333; --light-bg: #f4f4f4; 
+                --ps-blue: #003791; --xb-green: #107c10; --st-grey: #171a21; }
+        
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: var(--light-bg); color: #333; scroll-behavior: smooth; }
+        
+        /* Console Icon Colors */
+        .fa-playstation { color: var(--ps-blue); }
+        .fa-xbox { color: var(--xb-green); }
+        .fa-steam { color: var(--st-grey); }
+
+        /* Header - CHANGED TO ALLOW SCROLLING */
+        .header-wrap { width: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: white; position: relative; z-index: 999; }
+        .logo-container { background-color: var(--emerald); text-align: center; padding: 20px 10px; border-bottom: 4px solid var(--gold); cursor: pointer; }
+        .logo-container img { width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto; }
+        
+        .venue-section { text-align: center; padding: 15px; }
+        .venue-section h2 { margin: 0; text-transform: uppercase; font-size: 24px; letter-spacing: 1px; }
+        
+        .info-bar-below { background-color: var(--dark); color: #ffeb3b; padding: 10px; display: flex; justify-content: center; gap: 30px; font-size: 13px; font-weight: bold; }
+
+        /* SCROLLING TICKER */
+        .ticker-wrap { 
+			background: #222; 
+			color: #fff; 
+			overflow: hidden; 
+			white-space: nowrap; 
+			padding: 8px 0; 
+			border-bottom: 2px solid var(--emerald);
+			width: 100%;
+		}
+
+		.ticker-content { 
+			display: inline-block; 
+			padding-left: 100%; 
+			/* Increased speed and hardware acceleration */
+			animation: ticker 20s linear infinite; 
+			font-size: 12px; 
+			font-weight: bold; 
+			text-transform: uppercase; 
+			letter-spacing: 1px;
+			will-change: transform; 
+		}
+
+		.ticker-content span { 
+			margin-right: 50px; 
+			color: var(--gold); 
+			display: inline-block; /* Helps with width calculation */
+		}
+
+		@keyframes ticker { 
+			0% { transform: translateX(0); } 
+			100% { transform: translateX(-100%); } 
+		}
+
+        .content-padding { padding: 15px; max-width: 1400px; margin: 0 auto; }
+        
+        /* Highlighting Best Stats */
+        .best-stat { background-color: #2e7d32 !important; color: white !important; font-weight: bold; border-radius: 4px; }
+
+        /* Admin Panel */
+        .admin-section { background: #222; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 2px solid var(--gold); display: none; }
+        .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+        
+        /* Submission */
+        .submit-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 2px solid var(--emerald); }
+        #submission-content { display: none; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
+        
+        input, select { padding: 12px; border: 1px solid #ccc; border-radius: 4px; width: 100%; box-sizing: border-box; font-size: 14px; }
+        label { display: block; font-size: 10px; font-weight: bold; margin-bottom: 4px; color: #666; text-transform: uppercase; }
+        
+        .btn { padding: 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; text-transform: uppercase; transition: 0.2s; }
+        .btn-primary { background: var(--emerald); color: white; margin-top: 10px; }
+        .btn-toggle { background: #eee; color: var(--emerald); border: 1px solid var(--emerald); }
+
+        /* Tables */
+        .table-container { width: 100%; overflow-x: auto; background: white; border-radius: 4px; margin-bottom: 25px; border: 1px solid #ddd; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { background: var(--emerald); color: white; padding: 12px; font-size: 11px; text-transform: uppercase; }
+        td { padding: 12px; border-bottom: 1px solid #eee; text-align: center; font-size: 14px; }
+        .player-cell { text-align: left !important; font-weight: bold; }
+        .player-cell i { margin-right: 8px; width: 18px; text-align: center; }
+		
+		/* Ensure Season Standings is mobile-width but stays tight */
+		#season-body-parent {
+			width: fit-content !important;
+			min-width: 100% !important; /* Forces it to span the container width */
+			margin: 20px auto;
+			display: flex;
+			justify-content: center; /* Centers the table within the container */
+		}
+
+		#season-body-parent table {
+			width: auto !important; /* Table only takes up needed space */
+			min-width: 320px !important; /* Minimum width for small mobile screens */
+			margin: 0 auto;
+		}
+
+		#season-body-parent th, 
+		#season-body-parent td {
+			white-space: nowrap; 
+			padding: 10px 12px !important; /* Tightens the gap between EV and Name */
+		}
+
+		/* Specific control for the Player column to prevent it from pushing others away */
+		#season-body-parent .player-cell {
+			width: auto !important;
+			padding-right: 20px !important; /* Adds just enough space before the EV column */
+		}
+		
+		/* Match History Table sizing to Season Standings */
+		#history-container .history-content {
+			width: fit-content !important;
+			min-width: 100% !important; /* Spans the full width of the phone */
+			display: flex;
+			justify-content: center;
+			padding: 15px 0;
+			background: #fff;
+		}
+
+		#history-container table {
+			width: auto !important;
+			min-width: 320px !important; /* Standard mobile width */
+			margin: 0 auto;
+			border: 1px solid #eee;
+		}
+		
+		.history-header {
+			cursor: pointer;
+			user-select: none; /* Prevents text highlighting while tapping fast */
+		}
+
+		#history-container th, 
+		#history-container td {
+			white-space: nowrap; 
+			padding: 10px 12px !important;
+		}
+				
+        /* History */
+        .history-accordion { border: 1px solid #ddd; border-radius: 4px; margin-bottom: 8px; overflow: hidden; }
+        .history-header { background: var(--emerald); color: white; padding: 12px 15px; cursor: pointer; display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; }
+        .history-content { display: none; background: white; padding: 15px; }
+        .history-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f2f2f2; font-size: 13px; }
+		
+        #backToTop { position: fixed; bottom: 20px; right: 20px; background: var(--emerald); color: white; border-radius: 50%; width: 50px; height: 50px; display: none; align-items: center; justify-content: center; border: 2px solid var(--gold); cursor: pointer; z-index: 1000; }
+
+        .season-btn-container { margin-top: 60px; padding: 30px 15px; text-align: center; border-top: 1px solid #ddd; }
+        .btn-archive { display: inline-block; width: auto; min-width: 250px; padding: 16px 32px; background-color: #555; color: white !important; text-decoration: none; text-transform: uppercase; font-weight: bold; font-size: 14px; letter-spacing: 1px; border-radius: 4px; border-bottom: 4px solid #333; transition: all 0.3s ease; }
+        .btn-archive:hover { background-color: var(--emerald); border-bottom-color: #0d3d0f; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .btn-archive:active { transform: translateY(2px); border-bottom-width: 1px; }
+		
+		/* Halloween */
+		body.theme-halloween { --emerald: #ff6600; background-color: #1a1a1a; color: #eee; }
+		body.theme-halloween .card { background: #222; border: 1px solid #444; }
+		body.theme-halloween #current-venue::before { content: "🎃 "; }
+		body.theme-halloween #current-venue::after { content: " 👻"; }
+
+		/* Christmas */
+		body.theme-christmas { --emerald: #c62828; }
+		body.theme-christmas #current-venue::before { content: "🎄 "; }
+		body.theme-christmas #current-venue::after { content: " 🎅"; }
+		body.theme-christmas .header { background: linear-gradient(135deg, #c62828, #2e7d32); }
+
+		/* St. Patrick's */
+		body.theme-stpatricks { --emerald: #2e7d32; }
+		body.theme-stpatricks #current-venue::before { content: "🍀 "; }
+		body.theme-stpatricks #current-venue::after { content: " 🍺"; }
+		body.theme-stpatricks .btn-primary { background: #1b5e20; }
+    </style>
+</head>
+<body>
+
+    <button id="backToTop" onclick="window.scrollTo(0,0)"><i class="fa fa-chevron-up"></i></button>
+
+    <div class="header-wrap">
+        <div class="logo-container" id="admin-trigger"><img src="logo.png" alt="Emerald Tour"></div>
+        <div class="venue-section">
+            <h2 id="current-venue">Loading Tournament...</h2>
+            <div id="countdown" style="font-weight:bold; color:#b71c1c; font-size:13px; margin-top:5px;">--:--:--</div>
+        </div>
+        <div class="info-bar-below">
+            <div>POOL: <span id="total-prize-pool">$0</span></div>
+            <div>DATE: <span id="event-date">--/--/----</span></div>
+            <div>PAR: <span id="course-par">--</span></div>
+        </div>
+        <div class="ticker-wrap">
+            <div class="ticker-content" id="ticker-text">
+                <span>Welcome to the 2026 Emerald Tour Season 2</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-padding">
+        <div id="admin-panel" class="admin-section">
+            <h3 style="color:var(--gold); margin-top:0;">Tournament Manager</h3>
+            <div class="admin-grid">
+                <div><label>Venue Name</label><input type="text" id="admin-venue"></div>
+                <div><label>Course Par</label><input type="number" id="admin-par"></div>
+                <div><label>Event Date</label><input type="date" id="admin-date-picker"></div>
+                <div><label>Prize Pool ($)</label><input type="number" id="admin-pool"></div>
+                <div><label>Closing Time</label><input type="datetime-local" id="admin-close-time"></div>
+                <div style="display: flex; align-items: center; gap: 10px; padding-top: 20px;">
+                    <input type="checkbox" id="admin-signature" style="width: 20px; height: 20px;">
+                    <label style="margin: 0; color: var(--gold); font-size: 13px;">Signature Event (2x Pts)</label>
+                </div>
+            </div>
+			<div class="admin-item">
+				<label>Active Theme</label>
+				<select id="admin-theme-select" class="admin-input">
+					<option value="none">Standard Emerald</option>
+					<option value="theme-halloween">Halloween 🎃</option>
+					<option value="theme-christmas">Christmas 🎄</option>
+					<option value="theme-stpatricks">St. Patrick's 🍀</option>
+				</select>
+			</div>
+            <div style="margin-top:15px;">
+                <label>Scrolling Ticker Text (Separate events with | )</label>
+                <input type="text" id="admin-ticker">
+            </div>
+            <button id="saveSettingsBtn" class="btn" style="background:var(--gold); color:#222; margin-top:20px;">Update Dashboard</button>
+            <div style="display:flex; gap:10px; margin-top:15px; border-top:1px solid #444; padding-top:15px;">
+                <button id="archiveEventBtn" class="btn" style="background:#0277bd; color:white">Archive & Payout</button>
+                <button id="clearBoardBtn" class="btn" style="background:#b71c1c; color:white">Clear Live Scores</button>
+            </div>
+        </div>
+
+        <div class="submit-section">
+            <button class="btn btn-toggle" id="toggleFormBtn"><i class="fa fa-edit"></i> Open Scorecard Submission</button>
+            <div id="submission-content">
+                <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <div><label>Player Name</label><input type="text" id="form-name"></div>
+                    <div><label>4-Digit PIN</label><input type="password" id="form-pin" maxlength="4"></div>
+                    <div><label>Platform</label><select id="form-platform">
+                        <option value="fa-brands fa-playstation">PlayStation 5</option>
+                        <option value="fa-brands fa-xbox">Xbox Series X|S</option>
+                        <option value="fa-brands fa-steam">PC / Steam</option>
+                    </select></div>
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(75px, 1fr)); gap:10px;">
+                    <div><label>HCP</label><input type="number" id="form-hcap" value="0"></div>
+                    <div><label>R1</label><input type="number" id="form-r1"></div>
+                    <div><label>R2</label><input type="number" id="form-r2"></div>
+                    <div><label>R3</label><input type="number" id="form-r3"></div>
+                    <div><label>R4</label><input type="number" id="form-r4"></div>
+                    <div><label>FIR%</label><input type="number" id="form-fir" step="0.01"></div>
+                    <div><label>GIR%</label><input type="number" id="form-gir" step="0.01"></div>
+                    <div><label>SCR%</label><input type="number" id="form-scram" step="0.01"></div>
+                    <div><label>NTP</label><input type="number" id="form-ntp" step="0.01"></div>
+                </div>
+                <button class="btn btn-primary" id="submitScoreBtn">Post Official Round</button>
+            </div>
+        </div>
+
+        <h3 style="text-align:center; color:var(--emerald); letter-spacing:1px;">LIVE LEADERBOARD</h3>
+        <div class="table-container"><table>
+            <thead><tr><th>POS</th><th class="player-cell">PLAYER</th><th>HCP</th><th>R1</th><th>R2</th><th id="th-r3">R3</th> <th id="th-r4">R4</th><th>NET</th><th>TO PAR</th><th>FIR%</th><th>GIR%</th><th>SCR%</th><th>NTP</th><th>PTS</th><th>WEEK $</th></tr></thead>
+            <tbody id="leaderboard-body"></tbody>
+        </table></div>
+
+        <h3 style="text-align:center; color:var(--emerald); letter-spacing:1px; margin-top:40px;">SEASON STANDINGS</h3>
+		<p style="text-align:center; font-size:11px; color:#666; margin:0 0 15px 0; font-weight:bold;">Q = Qualifies for End of Season Tour Championship</p>
+        <div class="table-container" id="season-body-parent"><table>
+            <thead><tr><th>RANK</th><th class="player-cell">PLAYER</th><th>EV</th><th>POINTS</th><th style="text-align:right">EARNINGS</th></tr></thead>
+            <tbody id="season-body"></tbody>
+        </table></div>
+		
+		<div class="container">
+			<div class="logo-container"><img src="2k25-logo.png" alt="League Logo"></div>
+
+        <h3 style="text-align:center; color:var(--emerald); letter-spacing:1px; margin-top:40px;">TOURNAMENT HISTORY</h3>
+        <div id="history-container"></div>
+        
+        <div class="season-btn-container">
+            <a href="https://lst-2k.github.io/new-emerald-tour/" class="btn-archive">
+                <i class="fa-solid fa-clock-rotate-left" style="margin-right: 10px;"></i> Season 1 Archives
+            </a>
+        </div>
+    </div>
+
+<script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, doc, setDoc, updateDoc, getDoc, getDocs, onSnapshot, query, orderBy, limit, writeBatch, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+		  apiKey: "AIzaSyCvA7ApIEOZDthKfInVvM9HA52IZu61g4Q",
+		  authDomain: "emeraldtour3.firebaseapp.com",
+		  projectId: "emeraldtour3",
+		  storageBucket: "emeraldtour3.firebasestorage.app",
+		  messagingSenderId: "935962012595",
+		  appId: "1:935962012595:web:c570eccc6068b42babf9c6",
+		  measurementId: "G-3H3V3KYH2S"
+		};
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const settingsDoc = doc(db, "settings", "current_event");
+        const scoresCol = collection(db, "live_tournament");
+        const seasonCol = collection(db, "season_stats");
+        const archivesCol = collection(db, "history");
+
+        const payoutTable = [0.18, 0.108, 0.068, 0.048, 0.04, 0.036, 0.0335, 0.031, 0.029, 0.027, 0.025, 0.023, 0.021, 0.019, 0.018, 0.017, 0.016, 0.015, 0.014, 0.013];
+        const ptsTable = [500, 300, 190, 135, 110, 100, 95, 90, 85, 80, 75, 70, 65, 60, 57, 54, 51, 48, 45, 42];
+
+        // ADMIN: Update Dashboard
+        document.getElementById('saveSettingsBtn').onclick = async () => {
+            const updateData = { lastUpdate: serverTimestamp(), isSignature: document.getElementById('admin-signature').checked };
+            const v = document.getElementById('admin-venue').value, p = document.getElementById('admin-par').value, d = document.getElementById('admin-date-picker').value, pl = document.getElementById('admin-pool').value, t = document.getElementById('admin-ticker').value, ct = document.getElementById('admin-close-time').value;
+            if(v) updateData.venue = v; if(p) updateData.par = p; if(d) updateData.date = d; if(pl) updateData.pool = pl; if(t) updateData.tickerText = t; if(ct) updateData.closingTimestamp = new Date(ct).getTime();
+            updateData.theme = document.getElementById('admin-theme-select').value;
+            try { await updateDoc(settingsDoc, updateData); alert("Updated!"); }
+            catch(e) { await setDoc(settingsDoc, updateData, {merge:true}); alert("Saved!"); }
+        };
+
+        // UI: Header & Timer Listener
+        onSnapshot(settingsDoc, (s) => {
+            if (!s.exists()) return;
+            const data = s.data();
+            const venueEl = document.getElementById('current-venue');
+            venueEl.innerHTML = data.isSignature ? `<i class="fa fa-star" style="color:var(--gold)"></i> ${data.venue} <i class="fa fa-star" style="color:var(--gold)"></i>` : (data.venue || "Emerald Tour");
+            venueEl.style.color = data.isSignature ? "var(--gold)" : "var(--emerald)";
+            if(data.tickerText) document.getElementById('ticker-text').innerHTML = data.tickerText.split('|').map(i => `<span>${i.trim()}</span>`).join('');
+            document.getElementById('course-par').innerText = data.par || "--";
+            document.getElementById('total-prize-pool').innerText = `$${(parseInt(data.pool) || 0).toLocaleString()}`;
+            if (data.date) document.getElementById('event-date').innerText = data.date.split('-').reverse().join('/');
+			if (data.theme) {
+			// Remove any old theme classes
+			document.body.classList.remove('theme-halloween', 'theme-christmas', 'theme-stpatricks');
+			// Add the new one if it's not "none"
+			if (data.theme !== 'none') {
+				document.body.classList.add(data.theme);
+			}
+			// Sync the admin dropdown so it shows the current theme
+			document.getElementById('admin-theme-select').value = data.theme;
+		}
+            
+            // TIMER FIX: Don't kill the page when dist < 0
+            if (data.closingTimestamp) {
+                if (window.tourTimer) clearInterval(window.tourTimer);
+                window.tourTimer = setInterval(() => {
+                    const dist = data.closingTimestamp - new Date().getTime();
+                    const countdownEl = document.getElementById("countdown");
+                    if (dist < 0) {
+                        countdownEl.innerText = "TOURNAMENT FINISHED - AWAITING ARCHIVE";
+                        countdownEl.style.color = "var(--gold)";
+                    } else {
+                        countdownEl.innerText = Math.floor(dist/86400000)+"d "+Math.floor((dist%86400000)/3600000)+"h "+Math.floor((dist%3600000)/60000)+"m Remaining";
+                        countdownEl.style.color = "#b71c1c";
+                    }
+                }, 1000);
+            }
+        });
+		
+		// --- ADMIN: ARCHIVE & PAYOUT LOGIC ---
+		document.getElementById('archiveEventBtn').onclick = async () => {
+            const sSnap = await getDoc(settingsDoc);
+            if (!sSnap.exists()) return alert("Settings not found!");
+            const s = sSnap.data();
+            const cleanVenueName = s.venue || "Unknown Venue";
+
+            if(!confirm(`Archive ${cleanVenueName} and Pay Out Season Points & $10k Bonuses?`)) return;
+
+            try {
+                const batch = writeBatch(db);
+                const ptsMultiplier = s.isSignature === true ? 2 : 1;
+                const pool = parseInt(s.pool) || 0;
+                const par = parseInt(s.par) || 72;
+
+                const qSnap = await getDocs(scoresCol);
+                if (qSnap.empty) return alert("No scores found to archive!");
+
+                let psRaw = []; 
+                qSnap.forEach(d => psRaw.push({...d.data(), id: d.id}));
+
+                const bestFir = Math.max(...psRaw.map(p => p.fir || 0));
+                const bestGir = Math.max(...psRaw.map(p => p.gir || 0));
+                const bestScr = Math.max(...psRaw.map(p => p.scram || 0));
+                const validNtp = psRaw.filter(p => p.ntp > 0).map(p => p.ntp);
+                const bestNtp = validNtp.length > 0 ? Math.min(...validNtp) : null;
+
+                let ps = psRaw.map(p => {
+                    const rs = [p.r1, p.r2, p.r3, p.r4].filter(r => r > 0);
+                    const net = rs.length > 0 ? (rs.reduce((a, b) => a + b, 0)) - (parseInt(p.hcap) || 0) : 0;
+                    const tp = rs.length > 0 ? net - (par * rs.length) : 999;
+                    return { ...p, tp, act: rs.length };
+                }).sort((a, b) => a.tp - b.tp);
+
+                let i = 0, rank = 1, historyData = [];
+                while(i < ps.length) {
+                    if(ps[i].act === 0) { i++; continue; }
+                    let ties = 0; while(i+ties < ps.length && ps[i+ties].tp === ps[i].tp) ties++;
+                    let sP=0, sM=0; 
+                    for(let pX=rank; pX < rank+ties; pX++) { if(pX <= 20) { sP += ptsTable[pX-1]; sM += (payoutTable[pX-1] * pool); } }
+
+                    const avgPts = Math.round((sP / ties) * ptsMultiplier);
+                    const avgMoney = Math.round(sM / ties);
+
+                    for(let j=0; j < ties; j++) {
+                        const p = ps[i+j];
+                        let totalWeekEarnings = avgMoney;
+                        if (p.fir === bestFir && bestFir > 0) totalWeekEarnings += 10000;
+                        if (p.gir === bestGir && bestGir > 0) totalWeekEarnings += 10000;
+                        if (p.scram === bestScr && bestScr > 0) totalWeekEarnings += 10000;
+                        if (p.ntp === bestNtp && bestNtp !== null) totalWeekEarnings += 10000;
+
+                        const pRef = doc(db, "season_stats", p.id);
+                        batch.set(pRef, { 
+                            name: p.name, pts: increment(avgPts), earnings: increment(totalWeekEarnings), 
+                            events: increment(1), console: p.console || ""
+                        }, { merge: true });
+
+                        historyData.push({ 
+                            name: p.name, pts: avgPts, earned: totalWeekEarnings, 
+                            toPar: p.tp, console: p.console || "" 
+                        });
+                    }
+                    i += ties; rank += ties;
+                }
+
+                batch.set(doc(collection(db, "history")), { 
+                    venue: cleanVenueName, date: s.date || "", 
+                    timestamp: serverTimestamp(), results: historyData, isSignature: s.isSignature || false
+                });
+
+                batch.update(settingsDoc, { venue: "Tournament Closed", pool: 0, isSignature: false, closingTimestamp: null });
+                qSnap.forEach(d => batch.delete(d.ref));
+                await batch.commit(); 
+                alert("Archive Successful!");
+            } catch (err) { console.error(err); alert("Archive Failed."); }
+        };
+
+        // ADMIN: CLEAR LIVE BOARD
+        document.getElementById('clearBoardBtn').onclick = async () => {
+            if(!confirm("Wipe ALL live scores?")) return;
+            const qSnap = await getDocs(scoresCol);
+            const batch = writeBatch(db);
+            qSnap.forEach(d => batch.delete(d.ref));
+            await batch.commit();
+            alert("Board Cleared.");
+        };
+
+        // LIVE LEADERBOARD (Dynamic Column Hiding)
+        onSnapshot(scoresCol, async (snap) => {
+			const sSnap = await getDoc(settingsDoc);
+			const par = parseInt(sSnap.data().par) || 72, pool = parseInt(sSnap.data().pool) || 0, multiplier = sSnap.data().isSignature ? 2 : 1;
+
+			let ps = [];
+            let hasR3 = false, hasR4 = false;
+
+			snap.forEach(d => {
+				const p = d.data();
+				const rs = [p.r1, p.r2, p.r3, p.r4].filter(v => v > 0);
+                if (p.r3 > 0) hasR3 = true; if (p.r4 > 0) hasR4 = true;
+				const net = rs.length > 0 ? (rs.reduce((a, b) => a + b, 0)) - p.hcap : 0;
+				ps.push({ ...p, net, tp: rs.length > 0 ? net - (par * rs.length) : 999, act: rs.length });
+			});
+
+            // Toggle Header IDs if they exist in HTML
+            if(document.getElementById('th-r3')) document.getElementById('th-r3').style.display = hasR3 ? '' : 'none';
+            if(document.getElementById('th-r4')) document.getElementById('th-r4').style.display = hasR4 ? '' : 'none';
+
+			const bestFir = Math.max(...ps.map(p => p.fir || 0));
+			const bestGir = Math.max(...ps.map(p => p.gir || 0));
+			const bestScr = Math.max(...ps.map(p => p.scram || 0));
+			const validNtp = ps.filter(p => p.ntp > 0).map(p => p.ntp);
+			const bestNtp = validNtp.length > 0 ? Math.min(...validNtp) : null;
+
+			ps.sort((a, b) => a.tp - b.tp);
+			let html = "", i = 0, rank = 1;
+
+			while (i < ps.length) {
+				if (ps[i].act === 0) { i++; continue; }
+				let ties = 0; while (i + ties < ps.length && ps[i + ties].tp === ps[i].tp) ties++;
+				const rankDisplay = ties > 1 ? `T${rank}` : rank;
+				let sP = 0, sM = 0;
+				for (let pX = rank; pX < rank + ties; pX++) { if (pX <= 20) { sP += ptsTable[pX - 1]; sM += (payoutTable[pX - 1] * pool); } }
+				
+				for (let j = 0; j < ties; j++) {
+					const p = ps[i + j];
+					const icon = p.console ? `<i class="${p.console}"></i>` : "";
+                    const r3Cell = hasR3 ? `<td>${p.r3||'-'}</td>` : "";
+                    const r4Cell = hasR4 ? `<td>${p.r4||'-'}</td>` : "";
+
+					html += `<tr><td>${rankDisplay}</td><td class="player-cell">${icon}${p.name}</td><td>${p.hcap}</td>
+						<td>${p.r1||'-'}</td><td>${p.r2||'-'}</td>${r3Cell}${r4Cell}
+						<td>${p.net}</td><td style="color:${p.tp < 0 ? '#b71c1c' : (p.tp === 0 ? '#2e7d32' : '#333')}; font-weight:bold">${p.tp === 0 ? 'E' : (p.tp > 0 ? '+'+p.tp : p.tp)}</td>
+						<td class="${p.fir === bestFir && bestFir > 0 ? 'best-stat' : ''}">${(p.fir || 0).toFixed(2)}%</td>
+						<td class="${p.gir === bestGir && bestGir > 0 ? 'best-stat' : ''}">${(p.gir || 0).toFixed(2)}%</td>
+						<td class="${p.scram === bestScr && bestScr > 0 ? 'best-stat' : ''}">${(p.scram || 0).toFixed(2)}%</td>
+						<td class="${p.ntp === bestNtp ? 'best-stat' : ''}">${(p.ntp || 0).toFixed(2)}y</td>
+						<td>${Math.round((sP / ties) * multiplier)}</td><td style="color:var(--emerald); font-weight:bold">$${Math.round(sM / ties).toLocaleString()}</td></tr>`;
+				}
+				i += ties; rank += ties;
+			}
+			document.getElementById('leaderboard-body').innerHTML = html;
+		});
+
+        // SUBMIT SCORE
+        document.getElementById('submitScoreBtn').onclick = async (e) => {
+            e.preventDefault();
+            const n = document.getElementById('form-name').value.trim(), p = document.getElementById('form-pin').value;
+            if (!n || p.length < 4) return alert("Missing Info");
+            const ref = doc(db, "live_tournament", n.toLowerCase().replace(/\s+/g, '-')), ex = await getDoc(ref);
+            if (ex.exists() && ex.data().pin !== p) return alert("Wrong PIN");
+            await setDoc(ref, {
+                name: n, pin: p, console: document.getElementById('form-platform').value,
+                hcap: parseInt(document.getElementById('form-hcap').value) || 0,
+                r1: parseInt(document.getElementById('form-r1').value) || 0, r2: parseInt(document.getElementById('form-r2').value) || 0,
+                r3: parseInt(document.getElementById('form-r3').value) || 0, r4: parseInt(document.getElementById('form-r4').value) || 0,
+                fir: parseFloat(document.getElementById('form-fir').value) || 0, gir: parseFloat(document.getElementById('form-gir').value) || 0,
+                scram: parseFloat(document.getElementById('form-scram').value) || 0, ntp: parseFloat(document.getElementById('form-ntp').value) || 0
+            }, { merge: true });
+            alert("Saved!");
+        };
+
+        // UI HELPERS
+        document.getElementById('toggleFormBtn').onclick = () => {
+            const c = document.getElementById('submission-content');
+            c.style.display = c.style.display === "block" ? "none" : "block";
+        };
+
+        // SEASON STANDINGS
+        onSnapshot(query(seasonCol, orderBy("pts", "desc")), (snap) => {
+            let players = []; snap.forEach(d => players.push(d.data()));
+            const qualificationCutoff = Math.ceil(players.length / 2);
+            let html = "";
+            for (let i = 0; i < players.length; i++) {
+                const p = players[i];
+                let actualRank = 1; for(let j=0; j<i; j++) { if(players[j].pts > p.pts) actualRank++; }
+                const isTied = (players[i-1] && players[i-1].pts === p.pts) || (players[i+1] && players[i+1].pts === p.pts);
+                const rankDisplay = isTied ? `T${actualRank}` : actualRank;
+                const qSuffix = (i < qualificationCutoff && players.length > 0) ? " <span style='color:var(--gold); font-size:10px;'>Q</span>" : "";
+                html += `<tr><td>${rankDisplay}</td><td class="player-cell">${p.console ? `<i class="${p.console}"></i>` : ""}${p.name}${qSuffix}</td><td>${p.events}</td><td>${p.pts}</td><td style="text-align:right">$${(p.earnings||0).toLocaleString()}</td></tr>`;
+            }
+            document.getElementById('season-body').innerHTML = html;
+        });
+	
+		// TOURNAMENT HISTORY (With Ranking & Icons)
+        onSnapshot(query(archivesCol, orderBy("timestamp", "desc")), (snap) => {
+            const container = document.getElementById('history-container');
+            let html = "";
+            snap.forEach(doc => {
+                const event = doc.data();
+                const dateDisplay = event.date ? event.date.split('-').reverse().join('/') : "No Date";
+                const isSig = event.isSignature ? '<i class="fa fa-star" style="color:var(--gold)"></i> ' : '';
+                
+                // Sort results so 1st place is at the top
+                const sortedResults = [...event.results].sort((a, b) => (a.toPar || 0) - (b.toPar || 0));
+
+                html += `
+                <div class="history-accordion" style="margin-bottom:10px;">
+                    <div class="history-header" 
+                         onclick="this.classList.toggle('active'); 
+                                  const content = this.nextElementSibling; 
+                                  content.style.display = (content.style.display === 'block') ? 'none' : 'block';">
+                        <span>${isSig}${event.venue}</span>
+                        <span>${dateDisplay} <i class="fa fa-chevron-down" style="margin-left:10px"></i></span>
+                    </div>
+                    <div class="history-content" style="display:none; padding:10px; border:1px solid #eee; border-top:none; border-radius:0 0 8px 8px; background:#fff;">
+                        <table style="width:100%; font-size:13px; border-collapse:collapse;">
+                            <thead style="background:#f4f4f4; color:#333;">
+                                <tr>
+                                    <th style="text-align:left; padding:8px 5px; width:35px;">#</th>
+                                    <th style="text-align:left; padding:8px 5px;">Player</th>
+                                    <th style="text-align:center; width:50px;">NET</th>
+                                    <th style="text-align:center; width:50px;">PTS</th>
+                                    <th style="text-align:right; width:80px;">Earnings</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${sortedResults.map((r, idx) => `
+                                    <tr style="border-bottom:1px solid #eee;">
+                                        <td style="padding:8px 5px; font-weight:bold; color:#666; text-align:left;">${idx + 1}</td>
+                                        <td style="text-align:left; padding:8px 5px; font-weight:bold;">
+                                            ${r.console ? `<i class="${r.console}" style="margin-right:8px; font-size:0.85em; width:15px; text-align:center;"></i>` : ""}${r.name}
+                                        </td>
+                                        <td style="text-align:center; color:${r.toPar < 0 ? '#b71c1c' : (r.toPar === 0 ? '#2e7d32' : '#333')}">
+                                            ${r.toPar === 0 ? 'E' : (r.toPar > 0 ? '+'+r.toPar : r.toPar)}
+                                        </td>
+                                        <td style="text-align:center;">${r.pts}</td>
+                                        <td style="text-align:right; font-weight:bold;">$${(r.earned || 0).toLocaleString()}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html || "<p style='text-align:center; color:#999;'>No history available.</p>";
+        });
+
+        // ADMIN ACCESS
+        let count = 0; document.getElementById('admin-trigger').onclick = () => { if(++count === 5) { document.getElementById('admin-panel').style.display = 'block'; count = 0; }};
+        document.getElementById('backToTop').onclick = () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+};
+
+// SHOW/HIDE BUTTON ON SCROLL
+window.onscroll = () => {
+    const btn = document.getElementById('backToTop');
+    if (window.scrollY > 400) {
+        btn.style.display = 'flex';
+    } else {
+        btn.style.display = 'none';
+    }
+};
+    </script>
+</body>
+</html>
